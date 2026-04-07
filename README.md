@@ -48,6 +48,39 @@ This library expects these peer dependencies in your app:
 - `react-native-vision-camera`
 - `react-native-worklets-core`
 
+### iOS CocoaPods
+
+After installing dependencies, install iOS pods in your app:
+
+```sh
+cd ios && pod install
+```
+
+or run:
+
+```sh
+npx pod-install
+```
+
+If you are using the included example app in this repository, run the pod install command inside:
+
+```sh
+cd example/ios && pod install
+```
+
+### Linking
+
+This library uses React Native native module **autolinking**.
+
+In normal React Native projects, **manual linking is not required**.
+
+After adding the package:
+
+- reinstall iOS pods
+- rebuild the app
+- restart Metro if native code was added or updated
+
+Only use manual native linking if your React Native environment explicitly requires it.
 ## iOS requirements
 
 For the live frame processor path on iOS, your app must be configured for:
