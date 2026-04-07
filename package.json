@@ -1,6 +1,6 @@
 {
   "name": "react-native-vision-camera-payment-card-scanner",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "vision-camera-payment-card-scanner is a production-ready React Native library for fast, native payment card scanning built on top of react-native-vision-camera. It detects payment cards, reads the card number and expiry date, identifies the card brand, validates the PAN with Luhn, and returns structured scan results through a simple TypeScript API.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
