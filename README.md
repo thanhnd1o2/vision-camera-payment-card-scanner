@@ -14,7 +14,7 @@ It provides:
 The library is intentionally **platform-specific**:
 
 - **iOS** uses a native VisionCamera frame processor backed by Apple Vision-based scanning logic.
-- **Android** currently uses **ML Kit OCR on still images**.
+- **Android** uses a native `scanCard()` capture flow for payment card scanning, with still-image OCR support also available.
 
 ## Current platform status
 
@@ -22,9 +22,8 @@ The library is intentionally **platform-specific**:
 |---|---|---|
 | iOS | implemented | live VisionCamera frame processor via `scanPaymentCard(frame, options?)` |
 | iOS | implemented | still-image scanning helper via `scanCardImage(...)` |
-| Android | implemented | still-image OCR via `scanCardImage(...)` and ML Kit |
-| Android | not implemented yet | full native `scanCard()` capture flow |
-
+| Android | implemented | full native `scanCard()` capture flow |
+| Android | implemented | still-image OCR via `scanCardImage(...)` |
 ## Installation
 
 Install the package and required peers:
@@ -81,6 +80,7 @@ After adding the package:
 - restart Metro if native code was added or updated
 
 Only use manual native linking if your React Native environment explicitly requires it.
+
 ## iOS requirements
 
 For the live frame processor path on iOS, your app must be configured for:
@@ -98,7 +98,7 @@ Typical permission key:
 
 ## Android requirements
 
-Android currently supports **captured-image OCR** using ML Kit.
+Android supports a full native `scanCard()` capture flow.
 
 Your app should declare camera permission if you use a camera preview or capture flow in your app UI:
 
@@ -106,11 +106,7 @@ Your app should declare camera permission if you use a camera preview or capture
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-Note:
-
-- Android **does not currently implement** a full native `scanCard()` camera flow in this library.
-- The active Android path is `scanCardImage(...)`.
-
+Android also supports still-image scanning via `scanCardImage(...)` when you want to process an existing captured image instead of launching the native capture flow.
 ## API
 
 ### Types
@@ -164,9 +160,9 @@ const result = await scanCard({
 | Platform | Behavior |
 |---|---|
 | iOS | native module path available |
-| Android | currently rejects with an unsupported error for ML Kit option 2 |
+| Android | native capture flow available |
 
-If you need Android scanning today, use `scanCardImage(...)`.
+If you want to process an existing image instead of using the native capture UI, use `scanCardImage(...)`.
 
 ### `scanCardImage(options)`
 
