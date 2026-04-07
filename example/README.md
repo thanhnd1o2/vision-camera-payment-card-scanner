@@ -1,97 +1,231 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# vision-camera-payment-card-scanner example
 
-# Getting Started
+This example app demonstrates how to use `react-native-vision-camera-payment-card-scanner` on both iOS and Android.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+It is a development/demo app for the library in the parent directory.
 
-## Step 1: Start Metro
+## What the example demonstrates
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+The app currently includes:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- parser smoke-test output
+- native support check via `isSupported()`
+- camera permission handling
+- live camera preview
+- still-image capture and scan flow
+- platform-specific scanning behavior
 
-```sh
-# Using npm
-npm start
+## Platform behavior
 
-# OR using Yarn
-yarn start
-```
+| Platform | Demo behavior |
+|---|---|
+| iOS | live VisionCamera preview with `scanPaymentCard(frame, options?)` frame processing, plus still-image capture for comparison |
+| Android | live camera preview, still-image capture, then `scanCardImage(...)` using ML Kit OCR |
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
+## Current architecture in the example
 
 ### iOS
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+The iOS demo shows the most advanced flow currently available in the project:
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+- live camera preview
+- VisionCamera frame processor worklet
+- native `scanPaymentCard(frame, options?)`
+- still-image capture path for comparison
 
-```sh
-bundle install
+### Android
+
+The Android demo currently uses:
+
+- live camera preview
+- still-image capture with VisionCamera
+- `scanCardImage({ imageUri })`
+- Android native ML Kit OCR
+
+### Not currently implemented on Android
+
+The example does **not** currently demonstrate:
+
+- Android live frame scanning
+- Android native `scanCard()` camera-capture flow
+
+For Android, the intended demo path is:
+
+```text
+preview -> capture photo -> scanCardImage(imageUri) -> ML Kit OCR -> CardScanResult
 ```
 
-Then, and every time you update your native dependencies, run:
+## Example app UI sections
+
+The current demo UI includes these sections:
+
+### Parser smoke test
+
+Shows the JavaScript parser helpers using a sample PAN and expiry value:
+
+- normalized PAN
+- last4
+- brand detection
+- Luhn validation result
+- parsed expiry
+
+### Camera scanning demo
+
+Shows:
+
+- native support state
+- camera permission state
+- camera preview
+- live frame result area
+- last captured image URI
+- still-image scan result
+
+## Running the example
+
+From the project root:
 
 ```sh
+yarn install
+```
+
+## Start Metro
+
+From the project root:
+
+```sh
+yarn example start
+```
+
+## Run iOS
+
+From the project root:
+
+```sh
+yarn example ios
+```
+
+### iOS notes
+
+Make sure CocoaPods dependencies are installed and up to date when native dependencies change.
+
+Typical flow:
+
+```sh
+cd example/ios
+bundle install
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+The iOS example requires camera permission. The example app includes `NSCameraUsageDescription` in `Info.plist`.
+
+## Run Android
+
+From the project root:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+yarn example android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Android notes
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+The Android example requires camera permission for the preview/capture demo flow.
 
-## Step 3: Modify your app
+The example app manifest includes:
 
-Now that you have successfully run the app, let's make changes!
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+If permission gets stuck in a denied state, uninstall and reinstall the example app or re-enable camera access in Android Settings.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Key APIs used in the example
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+The example app imports and exercises these library APIs:
 
-## Congratulations! :tada:
+- `isSupported()`
+- `scanCardImage(...)`
+- `scanPaymentCard(frame, options?)`
+- `normalizePan(...)`
+- `getLast4(...)`
+- `detectBrand(...)`
+- `parseExpiry(...)`
+- `isValidLuhn(...)`
 
-You've successfully run and modified your React Native App. :partying_face:
+## Typical usage flows shown
 
-### Now what?
+### iOS live frame flow
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+```text
+Camera preview -> useFrameProcessor -> scanPaymentCard(frame, options) -> live CardScanResult updates
+```
 
-# Troubleshooting
+### Cross-platform still-image flow
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+```text
+takePhoto() -> build file:// URI -> scanCardImage({ imageUri }) -> CardScanResult
+```
 
-# Learn More
+## Troubleshooting
 
-To learn more about React Native, take a look at the following resources:
+### Android says camera permission is denied
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Check:
+
+- app has been rebuilt after manifest changes
+- camera permission is enabled in Android Settings
+- device has a back camera available
+
+### Android capture fails with camera closed
+
+The example app should keep the preview active during capture.
+If this reappears, rebuild the app and retry.
+
+### Android scan result is incomplete
+
+ML Kit OCR quality depends on:
+
+- sharp focus
+- good lighting
+- visible card number
+- minimal glare
+- card roughly filling the frame
+
+### iOS frame processor does not work
+
+Confirm:
+
+- `react-native-vision-camera` is installed
+- `react-native-worklets-core` is installed
+- pods are installed
+- the app has camera permission
+
+## Security notes
+
+Even in the demo app, follow safe handling rules:
+
+- do not log full PANs
+- do not log raw OCR text
+- do not store captured images longer than needed
+- do not scan CVV
+
+If debugging card values, prefer masked output such as:
+
+```text
+************1111
+```
+
+## Source locations
+
+Useful files in the example app:
+
+| File | Purpose |
+|---|---|
+| `/a0/usr/projects/vision-camera-payment-card-scanner/example/src/App.tsx` | main demo UI and scan flow |
+| `/a0/usr/projects/vision-camera-payment-card-scanner/example/android/app/src/main/AndroidManifest.xml` | Android app permissions |
+| `/a0/usr/projects/vision-camera-payment-card-scanner/example/ios/VisionCameraPaymentCardScannerExample/Info.plist` | iOS camera permission |
+
+## Related documentation
+
+- main library README: `/a0/usr/projects/vision-camera-payment-card-scanner/README.md`
+- React Native docs: https://reactnative.dev
+- VisionCamera docs: https://react-native-vision-camera.com

@@ -83,4 +83,21 @@ ios/generated
 android/generated
 
 # React Native Nitro Modules
+# React Native Nitro Modules
 nitrogen/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Logs and test output
+*.log
+coverage/
+
+# Temporary files and caches
+.tmp/
+tmp/
+.cache/
+
+.a0proj

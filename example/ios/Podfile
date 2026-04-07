@@ -32,5 +32,15 @@ target 'VisionCameraPaymentCardScannerExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    installer.pods_project.targets.each do |target|
+      next unless ['fmt', 'glog', 'Yoga', 'ReactCommon'].include?(target.name)
+
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        build_config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+        build_config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      end
+    end
   end
 end

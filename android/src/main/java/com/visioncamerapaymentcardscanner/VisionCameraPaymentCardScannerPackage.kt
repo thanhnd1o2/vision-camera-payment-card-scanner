@@ -5,9 +5,14 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
-import java.util.HashMap
+import com.mrousavy.camera.frameprocessors.FrameProcessorPluginRegistry
 
 class VisionCameraPaymentCardScannerPackage : BaseReactPackage() {
+  init {
+    FrameProcessorPluginRegistry.addFrameProcessorPlugin("scanPaymentCard") { _, _ ->
+      PaymentCardScannerFrameProcessorPlugin()
+    }
+  }
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
     return if (name == VisionCameraPaymentCardScannerModule.NAME) {
       VisionCameraPaymentCardScannerModule(reactContext)
